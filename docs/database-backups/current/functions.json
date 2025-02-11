@@ -1,0 +1,16 @@
+[
+  {
+    "name": "get_database_state",
+    "schema": "public",
+    "language": "plpgsql",
+    "arguments": "",
+    "returnType": "jsonb"
+  },
+  {
+    "name": "exec_sql",
+    "schema": "public",
+    "language": "plpgsql",
+    "arguments": "sql text",
+    "returnType": "void"
+  }
+]

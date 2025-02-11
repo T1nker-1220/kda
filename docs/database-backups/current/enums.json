@@ -1,0 +1,45 @@
+[
+  {
+    "name": "UserRole",
+    "schema": "public",
+    "values": [
+      "ADMIN",
+      "CUSTOMER"
+    ]
+  },
+  {
+    "name": "OrderStatus",
+    "schema": "public",
+    "values": [
+      "PENDING",
+      "CONFIRMED",
+      "COMPLETED",
+      "CANCELLED"
+    ]
+  },
+  {
+    "name": "PaymentStatus",
+    "schema": "public",
+    "values": [
+      "PENDING",
+      "VERIFIED",
+      "REJECTED"
+    ]
+  },
+  {
+    "name": "PaymentMethod",
+    "schema": "public",
+    "values": [
+      "GCASH",
+      "CASH"
+    ]
+  },
+  {
+    "name": "VariantType",
+    "schema": "public",
+    "values": [
+      "SIZE",
+      "FLAVOR"
+    ]
+  }
+]

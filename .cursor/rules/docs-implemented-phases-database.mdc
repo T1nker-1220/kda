@@ -1,0 +1,10 @@
+---
+description: trigger this rule when referencing for implemented and database documents 
+globs: **.md, *.json, */docs/database-backups/current/**.json
+---
+
+# These are the directories and markdown documentations files that you need to read to know what are the setups that we have done
+
+- [[AUTHENTICATION-SYSTEM.md](mdc:docs/phases/PHASE-1/AUTHENTICATION-SYSTEM.md)] This documentation for authentication setup you need to read this when you want to know about the authentication setup, this can be best practices
+
+- [/docs/database-backups/current/**.json] [enums.json](mdc:docs/database-backups/current/enums.json)[schema.json](mdc:docs/database-backups/current/schema.json)[tables.json](mdc:docs/database-backups/current/tables.json)[storage.json](mdc:docs/database-backups/current/storage.json)[contents.json](mdc:docs/database-backups/current/contents.json)[functions.json](mdc:docs/database-backups/current/functions.json) these files are the current state of the database on supabase, you will read these when it's about the database information

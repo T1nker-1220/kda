@@ -1,0 +1,1090 @@
+[
+  {
+    "name": "Category",
+    "schema": "public",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "imageUrl",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "sortOrder",
+        "type": "integer",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "createdAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": "CURRENT_TIMESTAMP",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "updatedAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      }
+    ],
+    "indexes": [
+      {
+        "name": "Category_pkey",
+        "definition": "CREATE UNIQUE INDEX \"Category_pkey\" ON public.\"Category\" USING btree (id)"
+      },
+      {
+        "name": "Category_name_key",
+        "definition": "CREATE UNIQUE INDEX \"Category_name_key\" ON public.\"Category\" USING btree (name)"
+      },
+      {
+        "name": "Category_sortOrder_idx",
+        "definition": "CREATE INDEX \"Category_sortOrder_idx\" ON public.\"Category\" USING btree (\"sortOrder\")"
+      }
+    ],
+    "policies": [
+      {
+        "name": "Admins can manage categories",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "Category",
+        "action": "ALL",
+        "schema": "public",
+        "definition": "(auth.is_admin() = true)"
+      },
+      {
+        "name": "Categories are viewable by everyone",
+        "roles": [
+          "public"
+        ],
+        "table": "Category",
+        "action": "SELECT",
+        "schema": "public",
+        "definition": "true"
+      }
+    ]
+  },
+  {
+    "name": "Product",
+    "schema": "public",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "categoryId",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": true,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "basePrice",
+        "type": "double precision",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "imageUrl",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "isAvailable",
+        "type": "boolean",
+        "isNullable": false,
+        "defaultValue": "true",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "allowsAddons",
+        "type": "boolean",
+        "isNullable": false,
+        "defaultValue": "false",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "createdAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": "CURRENT_TIMESTAMP",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "updatedAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      }
+    ],
+    "indexes": [
+      {
+        "name": "Product_pkey",
+        "definition": "CREATE UNIQUE INDEX \"Product_pkey\" ON public.\"Product\" USING btree (id)"
+      },
+      {
+        "name": "Product_categoryId_idx",
+        "definition": "CREATE INDEX \"Product_categoryId_idx\" ON public.\"Product\" USING btree (\"categoryId\")"
+      },
+      {
+        "name": "Product_isAvailable_idx",
+        "definition": "CREATE INDEX \"Product_isAvailable_idx\" ON public.\"Product\" USING btree (\"isAvailable\")"
+      },
+      {
+        "name": "Product_basePrice_idx",
+        "definition": "CREATE INDEX \"Product_basePrice_idx\" ON public.\"Product\" USING btree (\"basePrice\")"
+      }
+    ],
+    "policies": [
+      {
+        "name": "Admins can manage products",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "Product",
+        "action": "ALL",
+        "schema": "public",
+        "definition": "(auth.is_admin() = true)"
+      },
+      {
+        "name": "Products are viewable by everyone",
+        "roles": [
+          "public"
+        ],
+        "table": "Product",
+        "action": "SELECT",
+        "schema": "public",
+        "definition": "true"
+      }
+    ]
+  },
+  {
+    "name": "Order",
+    "schema": "public",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "userId",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": true,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "receiptId",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "status",
+        "type": "USER-DEFINED",
+        "isNullable": false,
+        "defaultValue": "'PENDING'::\"OrderStatus\"",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "paymentMethod",
+        "type": "USER-DEFINED",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "paymentStatus",
+        "type": "USER-DEFINED",
+        "isNullable": false,
+        "defaultValue": "'PENDING'::\"PaymentStatus\"",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "totalAmount",
+        "type": "double precision",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "createdAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": "CURRENT_TIMESTAMP",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "updatedAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      }
+    ],
+    "indexes": [
+      {
+        "name": "Order_pkey",
+        "definition": "CREATE UNIQUE INDEX \"Order_pkey\" ON public.\"Order\" USING btree (id)"
+      },
+      {
+        "name": "Order_receiptId_key",
+        "definition": "CREATE UNIQUE INDEX \"Order_receiptId_key\" ON public.\"Order\" USING btree (\"receiptId\")"
+      },
+      {
+        "name": "Order_userId_idx",
+        "definition": "CREATE INDEX \"Order_userId_idx\" ON public.\"Order\" USING btree (\"userId\")"
+      },
+      {
+        "name": "Order_status_idx",
+        "definition": "CREATE INDEX \"Order_status_idx\" ON public.\"Order\" USING btree (status)"
+      },
+      {
+        "name": "Order_paymentStatus_idx",
+        "definition": "CREATE INDEX \"Order_paymentStatus_idx\" ON public.\"Order\" USING btree (\"paymentStatus\")"
+      },
+      {
+        "name": "Order_createdAt_idx",
+        "definition": "CREATE INDEX \"Order_createdAt_idx\" ON public.\"Order\" USING btree (\"createdAt\")"
+      },
+      {
+        "name": "Order_receiptId_idx",
+        "definition": "CREATE INDEX \"Order_receiptId_idx\" ON public.\"Order\" USING btree (\"receiptId\")"
+      }
+    ],
+    "policies": [
+      {
+        "name": "Admins can manage orders",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "Order",
+        "action": "ALL",
+        "schema": "public",
+        "definition": "(auth.is_admin() = true)"
+      },
+      {
+        "name": "Users can create orders",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "Order",
+        "action": "INSERT",
+        "schema": "public",
+        "definition": null
+      },
+      {
+        "name": "Users can view own orders",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "Order",
+        "action": "SELECT",
+        "schema": "public",
+        "definition": "((\"userId\" = (auth.uid())::text) OR (auth.is_admin() = true))"
+      }
+    ]
+  },
+  {
+    "name": "OrderItem",
+    "schema": "public",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "orderId",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": true,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "productId",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": true,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "quantity",
+        "type": "integer",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "createdAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": "CURRENT_TIMESTAMP",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "price",
+        "type": "double precision",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "productVariantId",
+        "type": "text",
+        "isNullable": true,
+        "defaultValue": null,
+        "isForeignKey": true,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "updatedAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      }
+    ],
+    "indexes": [
+      {
+        "name": "OrderItem_pkey",
+        "definition": "CREATE UNIQUE INDEX \"OrderItem_pkey\" ON public.\"OrderItem\" USING btree (id)"
+      },
+      {
+        "name": "OrderItem_orderId_idx",
+        "definition": "CREATE INDEX \"OrderItem_orderId_idx\" ON public.\"OrderItem\" USING btree (\"orderId\")"
+      },
+      {
+        "name": "OrderItem_productId_idx",
+        "definition": "CREATE INDEX \"OrderItem_productId_idx\" ON public.\"OrderItem\" USING btree (\"productId\")"
+      }
+    ],
+    "policies": [
+      {
+        "name": "Users can create order items",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "OrderItem",
+        "action": "INSERT",
+        "schema": "public",
+        "definition": null
+      },
+      {
+        "name": "Users can view own order items",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "OrderItem",
+        "action": "SELECT",
+        "schema": "public",
+        "definition": "((EXISTS ( SELECT 1\n   FROM \"Order\"\n  WHERE ((\"Order\".id = \"OrderItem\".\"orderId\") AND (\"Order\".\"userId\" = (auth.uid())::text)))) OR (auth.is_admin() = true))"
+      }
+    ]
+  },
+  {
+    "name": "OrderItemAddon",
+    "schema": "public",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "orderItemId",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": true,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "addonId",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": true,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "quantity",
+        "type": "integer",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "unitPrice",
+        "type": "double precision",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "subtotal",
+        "type": "double precision",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      }
+    ],
+    "indexes": [
+      {
+        "name": "OrderItemAddon_pkey",
+        "definition": "CREATE UNIQUE INDEX \"OrderItemAddon_pkey\" ON public.\"OrderItemAddon\" USING btree (id)"
+      },
+      {
+        "name": "OrderItemAddon_orderItemId_idx",
+        "definition": "CREATE INDEX \"OrderItemAddon_orderItemId_idx\" ON public.\"OrderItemAddon\" USING btree (\"orderItemId\")"
+      },
+      {
+        "name": "OrderItemAddon_addonId_idx",
+        "definition": "CREATE INDEX \"OrderItemAddon_addonId_idx\" ON public.\"OrderItemAddon\" USING btree (\"addonId\")"
+      }
+    ],
+    "policies": [
+      {
+        "name": "Users can create order item addons",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "OrderItemAddon",
+        "action": "INSERT",
+        "schema": "public",
+        "definition": null
+      },
+      {
+        "name": "Users can view own order item addons",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "OrderItemAddon",
+        "action": "SELECT",
+        "schema": "public",
+        "definition": "((EXISTS ( SELECT 1\n   FROM (\"OrderItem\"\n     JOIN \"Order\" ON ((\"Order\".id = \"OrderItem\".\"orderId\")))\n  WHERE ((\"OrderItem\".id = \"OrderItemAddon\".\"orderItemId\") AND (\"Order\".\"userId\" = (auth.uid())::text)))) OR (auth.is_admin() = true))"
+      }
+    ]
+  },
+  {
+    "name": "Payment",
+    "schema": "public",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "orderId",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": true,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "amount",
+        "type": "double precision",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "method",
+        "type": "USER-DEFINED",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "status",
+        "type": "USER-DEFINED",
+        "isNullable": false,
+        "defaultValue": "'PENDING'::\"PaymentStatus\"",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "referenceNumber",
+        "type": "text",
+        "isNullable": true,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "screenshotUrl",
+        "type": "text",
+        "isNullable": true,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "verifiedBy",
+        "type": "text",
+        "isNullable": true,
+        "defaultValue": null,
+        "isForeignKey": true,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "verificationTimestamp",
+        "type": "timestamp without time zone",
+        "isNullable": true,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "notes",
+        "type": "text",
+        "isNullable": true,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "createdAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": "CURRENT_TIMESTAMP",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "updatedAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      }
+    ],
+    "indexes": [
+      {
+        "name": "Payment_pkey",
+        "definition": "CREATE UNIQUE INDEX \"Payment_pkey\" ON public.\"Payment\" USING btree (id)"
+      },
+      {
+        "name": "Payment_orderId_key",
+        "definition": "CREATE UNIQUE INDEX \"Payment_orderId_key\" ON public.\"Payment\" USING btree (\"orderId\")"
+      },
+      {
+        "name": "Payment_status_idx",
+        "definition": "CREATE INDEX \"Payment_status_idx\" ON public.\"Payment\" USING btree (status)"
+      },
+      {
+        "name": "Payment_method_idx",
+        "definition": "CREATE INDEX \"Payment_method_idx\" ON public.\"Payment\" USING btree (method)"
+      },
+      {
+        "name": "Payment_referenceNumber_idx",
+        "definition": "CREATE INDEX \"Payment_referenceNumber_idx\" ON public.\"Payment\" USING btree (\"referenceNumber\")"
+      },
+      {
+        "name": "Payment_verifiedBy_idx",
+        "definition": "CREATE INDEX \"Payment_verifiedBy_idx\" ON public.\"Payment\" USING btree (\"verifiedBy\")"
+      },
+      {
+        "name": "Payment_createdAt_idx",
+        "definition": "CREATE INDEX \"Payment_createdAt_idx\" ON public.\"Payment\" USING btree (\"createdAt\")"
+      }
+    ],
+    "policies": [
+      {
+        "name": "Admins can manage payments",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "Payment",
+        "action": "ALL",
+        "schema": "public",
+        "definition": "(auth.is_admin() = true)"
+      },
+      {
+        "name": "Users can create payments",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "Payment",
+        "action": "INSERT",
+        "schema": "public",
+        "definition": null
+      },
+      {
+        "name": "Users can view own payments",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "Payment",
+        "action": "SELECT",
+        "schema": "public",
+        "definition": "((EXISTS ( SELECT 1\n   FROM \"Order\"\n  WHERE ((\"Order\".id = \"Payment\".\"orderId\") AND (\"Order\".\"userId\" = (auth.uid())::text)))) OR (auth.is_admin() = true))"
+      }
+    ]
+  },
+  {
+    "name": "User",
+    "schema": "public",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "email",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "fullName",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "phoneNumber",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "address",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "role",
+        "type": "USER-DEFINED",
+        "isNullable": false,
+        "defaultValue": "'CUSTOMER'::\"UserRole\"",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "createdAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": "CURRENT_TIMESTAMP",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "updatedAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      }
+    ],
+    "indexes": [
+      {
+        "name": "User_pkey",
+        "definition": "CREATE UNIQUE INDEX \"User_pkey\" ON public.\"User\" USING btree (id)"
+      },
+      {
+        "name": "User_email_key",
+        "definition": "CREATE UNIQUE INDEX \"User_email_key\" ON public.\"User\" USING btree (email)"
+      },
+      {
+        "name": "User_email_idx",
+        "definition": "CREATE INDEX \"User_email_idx\" ON public.\"User\" USING btree (email)"
+      },
+      {
+        "name": "User_role_idx",
+        "definition": "CREATE INDEX \"User_role_idx\" ON public.\"User\" USING btree (role)"
+      }
+    ],
+    "policies": [
+      {
+        "name": "Admins can view all data",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "User",
+        "action": "ALL",
+        "schema": "public",
+        "definition": "(auth.is_admin() = true)"
+      },
+      {
+        "name": "Users can update own data",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "User",
+        "action": "UPDATE",
+        "schema": "public",
+        "definition": "(id = (auth.uid())::text)"
+      },
+      {
+        "name": "Users can view own data",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "User",
+        "action": "SELECT",
+        "schema": "public",
+        "definition": "((id = (auth.uid())::text) OR (auth.is_admin() = true))"
+      }
+    ]
+  },
+  {
+    "name": "ProductVariant",
+    "schema": "public",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "productId",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": true,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "type",
+        "type": "USER-DEFINED",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "price",
+        "type": "double precision",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "imageUrl",
+        "type": "text",
+        "isNullable": true,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "createdAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": "CURRENT_TIMESTAMP",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "updatedAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "stock",
+        "type": "integer",
+        "isNullable": false,
+        "defaultValue": "0",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "isAvailable",
+        "type": "boolean",
+        "isNullable": false,
+        "defaultValue": "true",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      }
+    ],
+    "indexes": [
+      {
+        "name": "ProductVariant_pkey",
+        "definition": "CREATE UNIQUE INDEX \"ProductVariant_pkey\" ON public.\"ProductVariant\" USING btree (id)"
+      },
+      {
+        "name": "ProductVariant_productId_idx",
+        "definition": "CREATE INDEX \"ProductVariant_productId_idx\" ON public.\"ProductVariant\" USING btree (\"productId\")"
+      },
+      {
+        "name": "ProductVariant_type_idx",
+        "definition": "CREATE INDEX \"ProductVariant_type_idx\" ON public.\"ProductVariant\" USING btree (type)"
+      },
+      {
+        "name": "ProductVariant_price_idx",
+        "definition": "CREATE INDEX \"ProductVariant_price_idx\" ON public.\"ProductVariant\" USING btree (price)"
+      },
+      {
+        "name": "product_variants_stock_idx",
+        "definition": "CREATE INDEX product_variants_stock_idx ON public.\"ProductVariant\" USING btree (stock)"
+      },
+      {
+        "name": "product_variants_isAvailable_idx",
+        "definition": "CREATE INDEX \"product_variants_isAvailable_idx\" ON public.\"ProductVariant\" USING btree (\"isAvailable\")"
+      }
+    ],
+    "policies": [
+      {
+        "name": "Admin full access for variants",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "ProductVariant",
+        "action": "ALL",
+        "schema": "public",
+        "definition": "(EXISTS ( SELECT 1\n   FROM \"User\"\n  WHERE ((\"User\".id = (auth.uid())::text) AND (\"User\".role = 'ADMIN'::\"UserRole\"))))"
+      },
+      {
+        "name": "Admins can manage product variants",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "ProductVariant",
+        "action": "ALL",
+        "schema": "public",
+        "definition": "(auth.is_admin() = true)"
+      },
+      {
+        "name": "Product variants are viewable by everyone",
+        "roles": [
+          "public"
+        ],
+        "table": "ProductVariant",
+        "action": "SELECT",
+        "schema": "public",
+        "definition": "true"
+      },
+      {
+        "name": "Public read access for variants",
+        "roles": [
+          "public"
+        ],
+        "table": "ProductVariant",
+        "action": "SELECT",
+        "schema": "public",
+        "definition": "true"
+      }
+    ]
+  },
+  {
+    "name": "GlobalAddon",
+    "schema": "public",
+    "columns": [
+      {
+        "name": "id",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": true
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "price",
+        "type": "double precision",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "isAvailable",
+        "type": "boolean",
+        "isNullable": false,
+        "defaultValue": "true",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "createdAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": "CURRENT_TIMESTAMP",
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      },
+      {
+        "name": "updatedAt",
+        "type": "timestamp without time zone",
+        "isNullable": false,
+        "defaultValue": null,
+        "isForeignKey": false,
+        "isPrimaryKey": false
+      }
+    ],
+    "indexes": [
+      {
+        "name": "GlobalAddon_pkey",
+        "definition": "CREATE UNIQUE INDEX \"GlobalAddon_pkey\" ON public.\"GlobalAddon\" USING btree (id)"
+      },
+      {
+        "name": "GlobalAddon_isAvailable_idx",
+        "definition": "CREATE INDEX \"GlobalAddon_isAvailable_idx\" ON public.\"GlobalAddon\" USING btree (\"isAvailable\")"
+      },
+      {
+        "name": "GlobalAddon_price_idx",
+        "definition": "CREATE INDEX \"GlobalAddon_price_idx\" ON public.\"GlobalAddon\" USING btree (price)"
+      }
+    ],
+    "policies": [
+      {
+        "name": "Admins can manage global addons",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "GlobalAddon",
+        "action": "ALL",
+        "schema": "public",
+        "definition": "(auth.is_admin() = true)"
+      },
+      {
+        "name": "Global addons are viewable by everyone",
+        "roles": [
+          "public"
+        ],
+        "table": "GlobalAddon",
+        "action": "SELECT",
+        "schema": "public",
+        "definition": "true"
+      }
+    ]
+  }
+]

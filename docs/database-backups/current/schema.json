@@ -1,0 +1,169 @@
+{
+  "timestamp": "2024-02-08T16:00:00Z",
+  "version": "1.0.0",
+  "type": "schema",
+  "data": {
+    "enums": [
+      {
+        "name": "UserRole",
+        "schema": "public",
+        "values": [
+          "ADMIN",
+          "CUSTOMER"
+        ]
+      },
+      {
+        "name": "OrderStatus",
+        "schema": "public",
+        "values": [
+          "PENDING",
+          "CONFIRMED",
+          "COMPLETED",
+          "CANCELLED"
+        ]
+      },
+      {
+        "name": "PaymentStatus",
+        "schema": "public",
+        "values": [
+          "PENDING",
+          "VERIFIED",
+          "REJECTED"
+        ]
+      },
+      {
+        "name": "PaymentMethod",
+        "schema": "public",
+        "values": [
+          "GCASH",
+          "CASH"
+        ]
+      },
+      {
+        "name": "VariantType",
+        "schema": "public",
+        "values": [
+          "SIZE",
+          "FLAVOR"
+        ]
+      }
+    ],
+    "tables": [
+      {
+        "name": "Category",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "type": "text",
+            "isNullable": false,
+            "defaultValue": null,
+            "isForeignKey": false,
+            "isPrimaryKey": true
+          },
+          {
+            "name": "name",
+            "type": "text",
+            "isNullable": false,
+            "defaultValue": null,
+            "isForeignKey": false,
+            "isPrimaryKey": false
+          },
+          {
+            "name": "description",
+            "type": "text",
+            "isNullable": false,
+            "defaultValue": null,
+            "isForeignKey": false,
+            "isPrimaryKey": false
+          },
+          {
+            "name": "imageUrl",
+            "type": "text",
+            "isNullable": false,
+            "defaultValue": null,
+            "isForeignKey": false,
+            "isPrimaryKey": false
+          },
+          {
+            "name": "sortOrder",
+            "type": "integer",
+            "isNullable": false,
+            "defaultValue": null,
+            "isForeignKey": false,
+            "isPrimaryKey": false
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp without time zone",
+            "isNullable": false,
+            "defaultValue": "CURRENT_TIMESTAMP",
+            "isForeignKey": false,
+            "isPrimaryKey": false
+          },
+          {
+            "name": "updatedAt",
+            "type": "timestamp without time zone",
+            "isNullable": false,
+            "defaultValue": null,
+            "isForeignKey": false,
+            "isPrimaryKey": false
+          }
+        ],
+        "indexes": [
+          {
+            "name": "Category_pkey",
+            "definition": "CREATE UNIQUE INDEX \"Category_pkey\" ON public.\"Category\" USING btree (id)"
+          },
+          {
+            "name": "Category_name_key",
+            "definition": "CREATE UNIQUE INDEX \"Category_name_key\" ON public.\"Category\" USING btree (name)"
+          },
+          {
+            "name": "Category_sortOrder_idx",
+            "definition": "CREATE INDEX \"Category_sortOrder_idx\" ON public.\"Category\" USING btree (\"sortOrder\")"
+          }
+        ],
+        "policies": [
+          {
+            "name": "Admins can manage categories",
+            "roles": [
+              "authenticated"
+            ],
+            "table": "Category",
+            "action": "ALL",
+            "schema": "public",
+            "definition": "(auth.is_admin() = true)"
+          },
+          {
+            "name": "Categories are viewable by everyone",
+            "roles": [
+              "public"
+            ],
+            "table": "Category",
+            "action": "SELECT",
+            "schema": "public",
+            "definition": "true"
+          }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "name": "get_database_state",
+        "schema": "public",
+        "language": "plpgsql",
+        "arguments": "",
+        "returnType": "jsonb"
+      },
+      {
+        "name": "exec_sql",
+        "schema": "public",
+        "language": "plpgsql",
+        "arguments": "sql text",
+        "returnType": "void"
+      }
+    ],
+    "triggers": null
+  }
+}
