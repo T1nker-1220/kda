@@ -1,11 +1,16 @@
 /**
  * Authentication Middleware
- * Handles authentication state and protected routes
+ * Handles authentication state and protected routes with Supabase
+ * Features:
+ * - Route protection
+ * - Role-based access control
+ * - Error handling
+ * - Proper redirects
  */
 
 import { createServerClient } from '@/lib/supabase'
-import type { NextRequest } from 'next/server'
-import { NextResponse } from 'next/server'
+import { type Database } from '@/types/supabase'
+import { NextResponse, type NextRequest } from 'next/server'
 
 // Define protected routes that require authentication
 const protectedRoutes = ['/dashboard', '/profile', '/orders']
@@ -23,10 +28,16 @@ export async function middleware(request: NextRequest) {
 
     const supabase = createServerClient()
 
-    // Refresh session if it exists
+    // Get session and user role
     const {
       data: { session },
+      error: sessionError,
     } = await supabase.auth.getSession()
+
+    if (sessionError) {
+      console.error('Session error:', sessionError.message)
+      throw new Error('Authentication failed')
+    }
 
     const pathname = request.nextUrl.pathname
 
@@ -43,18 +54,28 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(redirectUrl)
       }
 
+      // Get user role from metadata
+      const userRole = session.user.user_metadata.role as Database['public']['Enums']['UserRole']
+
       // Check admin access
-      if (isAdminRoute && session.user.user_metadata.role !== 'ADMIN') {
-        // Redirect non-admin users to home
-        return NextResponse.redirect(new URL('/', request.url))
+      if (isAdminRoute && userRole !== 'ADMIN') {
+        // Redirect non-admin users to home with error
+        const redirectUrl = new URL('/', request.url)
+        redirectUrl.searchParams.set('error', 'Access denied')
+        return NextResponse.redirect(redirectUrl)
       }
     }
 
+    // Update response headers if needed
+    response.headers.set('x-user-role', session?.user.user_metadata.role || 'none')
+
     return response
   } catch (error) {
-    // Log error and redirect to login on any error
     console.error('Middleware error:', error)
-    return NextResponse.redirect(new URL('/login', request.url))
+    // Redirect to login with error message
+    const redirectUrl = new URL('/login', request.url)
+    redirectUrl.searchParams.set('error', 'Authentication failed')
+    return NextResponse.redirect(redirectUrl)
   }
 }
 
@@ -66,7 +87,8 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
+     * - api routes
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|api).*)',
   ],
 }

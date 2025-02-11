@@ -42,4 +42,10 @@
 
 - [0.0.19] Development: Implemented comprehensive dark mode support and error handling system - created theme provider with system preference detection, theme toggle with accessibility, auth layout with responsive design, loading spinner component, error message component, and error page for authentication failures. All components support dark mode and include proper ARIA labels. #feature #ui #accessibility
 
+- [0.0.20] Development: Clarified login page requirements and enhanced user experience features - confirmed need for loading states during authentication flow, OAuth popup blocking detection, and welcome message after successful login. Updated implementation plan with detailed steps for each feature and increased project confidence to 100%. #planning #authentication #ux
+
+- [0.0.21] Development: Updated login page to use Supabase authentication instead of NextAuth, implementing Google OAuth with proper loading states, popup blocking detection, error handling, and welcome message toast notifications. The implementation follows project requirements for exclusive Google OAuth usage and maintains accessibility standards with ARIA labels and keyboard navigation. #feature #authentication #security
+
+- [0.0.22] Development: Enhanced authentication system by adding Toaster component to root layout for notifications, updating middleware for proper role-based access control with Supabase, and improving auth callback route with better error handling, role assignment, and redirects. All changes follow project requirements for exclusive Google OAuth usage and maintain proper security measures. #feature #authentication #security
+
 *Note: This memory file maintains chronological order and uses tags for better organization. Cross-reference with @memories2.md will be created when reaching 1000 lines.*

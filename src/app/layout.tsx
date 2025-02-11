@@ -1,9 +1,15 @@
 /**
  * Root Layout
  * This is the main layout component that wraps all pages
+ * Features:
+ * - Theme provider for dark mode support
+ * - Auth provider for authentication state
+ * - Toast notifications
+ * - SEO metadata
  */
 
 import { ThemeProvider } from '@/components/theme-provider'
+import { Toaster } from '@/components/ui/toaster'
 import { AuthProvider } from '@/lib/auth-context'
 import { cn } from '@/lib/utils'
 import type { Metadata } from 'next'
@@ -37,6 +43,7 @@ export default function RootLayout({
         >
           <AuthProvider>
             {children}
+            <Toaster />
           </AuthProvider>
         </ThemeProvider>
       </body>
