@@ -31,4 +31,11 @@
 ### SSR & Client-Side APIs
 [0.0.12] Critical - Browser APIs in SSR: Issue: ReferenceError: document is not defined due to accessing browser-only APIs during server rendering → Solution: Implemented dynamic imports or useEffect hooks for browser-specific code, and created separate client/server configurations → Why: Server components cannot access browser APIs like document/window, requiring proper code splitting and environment checks.
 
+### Database Implementation
+[0.0.13] Important - Query Caching Strategy: Issue: Inefficient database queries causing unnecessary API calls → Solution: Implemented stale-while-revalidate pattern with React Query, using 5-minute stale time and 30-minute garbage collection → Why: Proper caching strategy significantly reduces API calls while maintaining data freshness.
+
+[0.0.14] Important - Real-time Subscription Management: Issue: Memory leaks and unnecessary updates from real-time subscriptions → Solution: Implemented proper cleanup in useEffect hooks and added enabled flag for conditional subscriptions → Why: Proper subscription management prevents memory leaks and improves performance.
+
+[0.0.15] Important - Type-safe Database Operations: Issue: Type mismatches between database schema and frontend code → Solution: Generated comprehensive TypeScript types from database schema and created type-safe utility hooks → Why: Strong typing prevents runtime errors and improves developer experience.
+
 *Note: This file is updated only upon user request and focuses on capturing important, reusable lessons learned during development. Each entry includes a timestamp, category, and comprehensive explanation to prevent similar issues in the future.*

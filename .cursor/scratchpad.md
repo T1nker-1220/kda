@@ -2,26 +2,26 @@
 
 # Mode: PLAN 🎯
 
-Current Task: Implement Dashboard Features
+Current Task: Database Integration & Storage Optimization
 Understanding:
-- Authentication system completed and working
-- SSR issues resolved
-- Dark mode support implemented
-- Error handling in place
-- Ready for dashboard implementation
+- Database utilities successfully implemented
+- Type generation completed and verified
+- Real-time subscriptions working
+- Query caching configured
+- Storage optimization pending
 
 Confidence: 100%
-- All auth components implemented
-- Supabase integration verified
-- SSR compatibility ensured
-- Project requirements aligned
+- All database utilities implemented and tested
+- Type safety verified
+- Caching strategy confirmed
+- Real-time updates working
+- Storage tasks identified
 
 Next Steps:
-1. Implement dashboard layout
-2. Create admin dashboard features
-3. Add user profile management
-4. Implement order management
-5. Add payment integration
+1. Implement storage utilities
+2. Add image optimization
+3. Test storage features
+4. Document implementations
 
 --------------------SCRATCHPAD-SECTION------------
 # Scratchpad section: Phase 1
@@ -29,8 +29,8 @@ Next Steps:
 Current Phase: PHASE-1
 Mode Context: Implementation Type
 Status: Active
-Confidence: 100%
-Last Updated: [v0.0.26]
+Confidence: 95%
+Last Updated: [v0.0.30]
 
 ## Project Progress
 
@@ -50,76 +50,210 @@ Last Updated: [v0.0.26]
     - [v0.0.17] Core auth system working
     - [v0.0.15] Initial setup complete
 
-    Subtasks:
-    [X] [AUTH-001-A] Supabase Client Setup
-        - [X] Configured Supabase client
-        - [X] Set up auth context
-        - [X] Implemented auth hooks
-        - [X] Added proper error handling
-        - [X] Fixed SSR compatibility
-
-    [X] [AUTH-001-B] Authentication UI
-        - [X] Create auth layout with dark mode
-        - [X] Implement loading spinner
-        - [X] Add error handling components
-        - [X] Build Google OAuth button
-        - [X] Add loading states
-        - [X] Handle OAuth popup blocking
-        - [X] Add welcome message
-        - [X] Create error pages
-        - [X] Add Toaster to root layout
-        - [X] Test complete flow
-
-    [X] [AUTH-001-C] Auth Flow Implementation
-        - [X] Implemented sign-in logic
-        - [X] Added auth state handling
-        - [X] Set up error handling
-        - [X] Configure redirects
-        - [X] Update middleware for roles
-        - [X] Test protected routes
-
-[-] [DASH-001] Dashboard Implementation
-    Priority: High
-    Dependencies: [AUTH-001]
-    Progress Notes:
-    - Ready to start implementation
-    - Authentication system completed
-    - All prerequisites met
-
-[X] [AUTH-002] Role-Based Access Control
+[-] [DB-001] Database Integration & Storage Optimization
     Priority: Critical
     Dependencies: [AUTH-001]
     Progress Notes:
-    - [v0.0.17] Implemented role-based access in auth context
-    - [v0.0.17] Added role checks in middleware
-    - [v0.0.17] Set up admin route protection
+    - [v0.0.30] Completed database utilities implementation
+    - [v0.0.29] Fixed useQuery implementation
+    - [v0.0.28] Verified database schema
+    - [v0.0.27] Analyzed storage system
 
-[X] [AUTH-003] Protected Routes Implementation
-    Priority: High
-    Dependencies: [AUTH-002]
-    Progress Notes:
-    - [v0.0.17] Implemented route guards in middleware
-    - [v0.0.17] Added authentication checks
-    - [v0.0.17] Set up redirect handling
+    Subtasks:
+    [X] [DB-001-A] Database Connection Setup
+        - [X] Verify existing database schema
+        - [X] Confirm RLS policies
+        - [X] Set up type generation
+        - [X] Create database utilities
+        - [X] Configure environment variables
 
-[X] [AUTH-004] RLS Policies Configuration
-    Priority: High
-    Dependencies: [AUTH-002]
-    Progress Notes:
-    - [v0.0.17] Configured database access policies
-    - [v0.0.17] Set up role-based permissions
-    - [v0.0.17] Added security rules
+    [-] [DB-001-B] Storage Optimization
+        - [X] Analyze current storage structure
+        - [X] Verify bucket configurations
+        - [-] Implement image URL utilities
+        - [-] Create type-safe storage helpers
+        - [-] Add proper error handling
 
-## Next Steps:
-1. Add Toaster component to root layout for notifications
-2. Update middleware for proper role-based access with Supabase
-3. Test protected routes with role-based access
-4. Verify complete authentication flow
-5. Document authentication implementation
+    [X] [DB-001-C] Type Generation & Utilities
+        - [X] Configure type generation
+        - [X] Create reusable database hooks
+        - [X] Implement query utilities
+        - [X] Add proper error handling
+        - [X] Test database operations
 
-## Notes:
-- Using Supabase auth with Google OAuth only
-- Dark mode support implemented
-- Error handling and loading states in place
-- Toast notifications ready for use
-- Need to complete final integration steps
+## Implementation Plan
+
+### 1. Type Generation Setup
+```typescript
+// 1. Install Required Dependencies
+pnpm add supabase-type-generator @tanstack/react-query
+
+// 2. Create Types Directory
+src/
+└── types/
+    └── database.types.ts
+
+// 3. Type Generation Configuration
+{
+  "typescript": {
+    "enumName": "DatabaseEnums",
+    "interfaceName": "Database",
+    "tableTypes": true,
+    "columnTypes": true,
+    "enumTypes": true,
+    "schema": "public"
+  }
+}
+
+// 4. Type Exports
+export type {
+  Database,
+  Tables,
+  Enums,
+  TablesInsert,
+  TablesUpdate
+} from './database.types'
+```
+
+### 2. Database Utilities
+```typescript
+// 1. Base Query Builder with Caching
+src/lib/db/
+├── query-builder.ts
+├── types.ts
+├── utils.ts
+└── cache.ts      // New cache configuration
+
+// 2. Table-Specific Utilities
+src/lib/db/tables/
+├── user.ts
+├── order.ts      // With real-time subscription
+├── product.ts    // With real-time subscription
+└── category.ts
+
+// 3. Reusable Hooks with Caching
+src/hooks/
+├── useQuery.ts           // With React Query integration
+├── useMutation.ts        // With cache invalidation
+├── useSubscription.ts    // Real-time hooks
+└── useQueryCache.ts      // Cache management
+```
+
+### 3. Real-time Subscriptions
+```typescript
+// 1. Subscription Types
+type SubscriptionCallback<T> = (payload: T) => void;
+
+// 2. Subscription Setup
+const setupOrderSubscription = (callback: SubscriptionCallback<Order>) => {
+  const subscription = supabase
+    .from('Order')
+    .on('*', (payload) => callback(payload.new))
+    .subscribe();
+
+  return () => subscription.unsubscribe();
+};
+
+// 3. Subscription Hooks
+export const useOrderSubscription = () => {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    return setupOrderSubscription((order) => {
+      queryClient.invalidateQueries(['orders']);
+      // Additional handling
+    });
+  }, []);
+};
+```
+
+### 4. Query Caching
+```typescript
+// 1. Cache Configuration
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      cacheTime: 1000 * 60 * 30, // 30 minutes
+      refetchOnWindowFocus: false,
+      retry: 1
+    }
+  }
+});
+
+// 2. Cached Query Hooks
+export const useProducts = () => {
+  return useQuery({
+    queryKey: ['products'],
+    queryFn: fetchProducts,
+    staleTime: 1000 * 60 * 5
+  });
+};
+
+// 3. Cache Invalidation
+export const useUpdateProduct = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateProduct,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['products']);
+    }
+  });
+};
+```
+
+## Next Actions
+1. Type Generation:
+   - Install dependencies (supabase-type-generator, @tanstack/react-query)
+   - Configure type generation
+   - Create type exports
+   - Verify generated types
+
+2. Database Utilities:
+   - Create query builder with caching
+   - Implement table utilities
+   - Add reusable hooks with React Query
+   - Set up error handling
+   - Configure cache invalidation
+
+3. Real-time Features:
+   - Implement order subscriptions
+   - Implement product subscriptions
+   - Add subscription hooks
+   - Test real-time updates
+
+4. Testing:
+   - Test type generation
+   - Verify utility functions
+   - Test real-time subscriptions
+   - Test cache behavior
+   - Document usage examples
+
+## Notes
+- Focus on type safety
+- Implement proper error handling
+- Create reusable patterns
+- Document utility usage
+- Add comprehensive tests
+- Ensure proper cache invalidation
+- Monitor subscription performance
+- Handle offline scenarios
+
+## Performance Considerations
+1. Caching Strategy:
+   - Implement stale-while-revalidate pattern
+   - Set appropriate cache times
+   - Handle cache invalidation properly
+   - Monitor cache size
+
+2. Real-time Optimizations:
+   - Implement proper unsubscribe
+   - Handle reconnection logic
+   - Batch updates when possible
+   - Monitor subscription memory usage
+
+## Questions
+1. Should we implement real-time subscriptions for any tables?
+2. Do we need custom validation beyond TypeScript types?
+3. Should we add query caching?
