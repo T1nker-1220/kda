@@ -28,4 +28,7 @@
 
 [0.0.11] Important - Error Boundaries: Issue: Uncaught errors causing app crashes → Solution: Added proper error boundaries with user-friendly error messages and recovery options → Why: Proper error handling prevents app crashes and provides better user experience.
 
+### SSR & Client-Side APIs
+[0.0.12] Critical - Browser APIs in SSR: Issue: ReferenceError: document is not defined due to accessing browser-only APIs during server rendering → Solution: Implemented dynamic imports or useEffect hooks for browser-specific code, and created separate client/server configurations → Why: Server components cannot access browser APIs like document/window, requiring proper code splitting and environment checks.
+
 *Note: This file is updated only upon user request and focuses on capturing important, reusable lessons learned during development. Each entry includes a timestamp, category, and comprehensive explanation to prevent similar issues in the future.*

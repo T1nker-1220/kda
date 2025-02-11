@@ -9,8 +9,7 @@
  * - Success message handling
  */
 
-import { createServerClient } from '@/lib/supabase'
-import { cookies } from 'next/headers'
+import { createServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
@@ -18,7 +17,18 @@ export async function GET(request: Request) {
     const requestUrl = new URL(request.url)
     const code = requestUrl.searchParams.get('code')
     const next = requestUrl.searchParams.get('next') || '/dashboard'
+    const error = requestUrl.searchParams.get('error')
+    const error_description = requestUrl.searchParams.get('error_description')
 
+    // Handle OAuth errors
+    if (error) {
+      console.error('OAuth error:', error, error_description)
+      return NextResponse.redirect(
+        `${requestUrl.origin}/login?error=${encodeURIComponent(error_description || error)}`
+      )
+    }
+
+    // Validate code
     if (!code) {
       console.error('No code provided in callback')
       return NextResponse.redirect(
@@ -26,16 +36,16 @@ export async function GET(request: Request) {
       )
     }
 
-    const cookieStore = cookies()
+    // Create server client
     const supabase = createServerClient()
 
     // Exchange code for session
-    const { data: { session }, error } = await supabase.auth.exchangeCodeForSession(code)
+    const { data: { session }, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
 
-    if (error) {
-      console.error('Auth callback error:', error.message)
+    if (exchangeError) {
+      console.error('Auth callback error:', exchangeError.message)
       return NextResponse.redirect(
-        `${requestUrl.origin}/login?error=${encodeURIComponent(error.message)}`
+        `${requestUrl.origin}/login?error=${encodeURIComponent(exchangeError.message)}`
       )
     }
 
@@ -54,6 +64,7 @@ export async function GET(request: Request) {
 
       if (updateError) {
         console.error('Error setting default role:', updateError.message)
+        // Continue despite role setting error - user can still access basic features
       }
     }
 
@@ -61,12 +72,15 @@ export async function GET(request: Request) {
     const redirectUrl = new URL(next, requestUrl.origin)
     redirectUrl.searchParams.set('auth_success', 'true')
 
-    // Redirect to the intended destination
-    return NextResponse.redirect(redirectUrl)
+    // Create the response with the redirect
+    const response = NextResponse.redirect(redirectUrl)
+
+    return response
   } catch (error) {
-    console.error('Unexpected error in callback:', error)
+    console.error('Unexpected error in auth callback:', error)
+    const requestUrl = new URL(request.url)
     return NextResponse.redirect(
-      `${new URL(request.url).origin}/login?error=Unexpected error occurred`
+      `${requestUrl.origin}/login?error=Unexpected authentication error`
     )
   }
 }

@@ -8,7 +8,7 @@
  * - Proper redirects
  */
 
-import { createServerClient } from '@/lib/supabase'
+import { createServerClient } from '@/lib/supabase/server'
 import { type Database } from '@/types/supabase'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -16,6 +16,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 const protectedRoutes = ['/dashboard', '/profile', '/orders']
 // Define admin-only routes
 const adminRoutes = ['/dashboard/admin']
+
+// Define public routes that don't need auth
+const publicRoutes = ['/', '/login', '/auth/callback']
 
 export async function middleware(request: NextRequest) {
   try {
@@ -26,20 +29,29 @@ export async function middleware(request: NextRequest) {
       },
     })
 
+    // Create supabase client
     const supabase = createServerClient()
 
-    // Get session and user role
+    // Refresh session if available
     const {
       data: { session },
       error: sessionError,
     } = await supabase.auth.getSession()
 
-    if (sessionError) {
-      console.error('Session error:', sessionError.message)
-      throw new Error('Authentication failed')
+    const pathname = request.nextUrl.pathname
+
+    // Allow public routes
+    if (publicRoutes.some(route => pathname.startsWith(route))) {
+      return response
     }
 
-    const pathname = request.nextUrl.pathname
+    // Handle session errors
+    if (sessionError) {
+      console.error('Session error:', sessionError.message)
+      const redirectUrl = new URL('/login', request.url)
+      redirectUrl.searchParams.set('error', 'Session expired')
+      return NextResponse.redirect(redirectUrl)
+    }
 
     // Check if it's a protected route
     const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
@@ -66,19 +78,17 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // Update response headers if needed
-    response.headers.set('x-user-role', session?.user.user_metadata.role || 'none')
-
     return response
   } catch (error) {
     console.error('Middleware error:', error)
-    // Redirect to login with error message
+    // Redirect to login with error on any unexpected errors
     const redirectUrl = new URL('/login', request.url)
-    redirectUrl.searchParams.set('error', 'Authentication failed')
+    redirectUrl.searchParams.set('error', 'Authentication error')
     return NextResponse.redirect(redirectUrl)
   }
 }
 
+// Configure middleware to run on specific paths
 export const config = {
   matcher: [
     /*
@@ -87,8 +97,7 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
-     * - api routes
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|api).*)',
+    '/((?!_next/static|_next/image|favicon.ico|images/).*)',
   ],
 }

@@ -10,10 +10,10 @@
 
 'use client'
 
+import { supabase } from '@/lib/supabase/client'
 import { Database } from '@/types/supabase'
-import { User } from '@supabase/supabase-js'
+import { AuthChangeEvent, Session, User } from '@supabase/supabase-js'
 import { createContext, useContext, useEffect, useState } from 'react'
-import { supabase } from './supabase'
 
 type UserRole = Database['public']['Enums']['UserRole']
 
@@ -34,22 +34,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        console.error('Error getting session:', error.message)
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+
+        if (error) {
+          console.error('Error getting session:', error.message)
+          return
+        }
+
+        if (session) {
+          setUser(session.user)
+          setRole(session.user.user_metadata.role as UserRole)
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error)
+      } finally {
+        setIsLoading(false)
       }
-      setUser(session?.user ?? null)
-      setRole(session?.user?.user_metadata.role as UserRole ?? null)
-      setIsLoading(false)
-    })
+    }
+
+    initializeAuth()
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      setRole(session?.user?.user_metadata.role as UserRole ?? null)
-      setIsLoading(false)
+    } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
+      setIsLoading(true)
+      try {
+        if (session) {
+          setUser(session.user)
+          setRole(session.user.user_metadata.role as UserRole)
+        } else {
+          setUser(null)
+          setRole(null)
+        }
+      } catch (error) {
+        console.error('Error handling auth change:', error)
+      } finally {
+        setIsLoading(false)
+      }
     })
 
     return () => {
@@ -68,6 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             prompt: 'consent',
           },
           scopes: 'email profile',
+          skipBrowserRedirect: false, // Let Supabase handle the redirect
         },
       })
 
@@ -88,6 +113,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('Error signing out:', error.message)
         throw error
       }
+      // Clear user and role state
+      setUser(null)
+      setRole(null)
     } catch (error) {
       console.error('Error in signOut:', error)
       throw error
