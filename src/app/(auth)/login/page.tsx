@@ -4,9 +4,8 @@
  * Login Page
  * Handles user authentication with Supabase Google OAuth
  * Features:
- * - Google OAuth sign in
+ * - Google OAuth sign in with PKCE
  * - Loading states during authentication
- * - Popup blocking detection
  * - Error handling
  * - Welcome message toast
  * - Accessibility support
@@ -29,7 +28,6 @@ export default function LoginPage() {
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [isPopupBlocked, setIsPopupBlocked] = useState(false)
 
   // Handle OAuth callback error
   useEffect(() => {
@@ -43,26 +41,11 @@ export default function LoginPage() {
     try {
       setIsLoading(true)
       setError(null)
-      setIsPopupBlocked(false)
-
-      // Attempt to open popup
-      const popup = window.open('about:blank', 'google-login', 'width=500,height=600')
-      if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-        setIsPopupBlocked(true)
-        setIsLoading(false)
-        return
-      }
-      popup.close()
 
       await signInWithGoogle()
 
-      toast({
-        title: 'Welcome back! 👋',
-        description: 'Successfully signed in with Google',
-        variant: 'success',
-      })
-
-      router.push('/dashboard')
+      // Note: We don't need to show the success toast here
+      // as the user will be redirected to the callback page
     } catch (error) {
       console.error('Error signing in with Google:', error)
       setError('An unexpected error occurred during sign in')
@@ -83,13 +66,6 @@ export default function LoginPage() {
       {error && (
         <ErrorMessage
           message={error}
-          className="animate-in fade-in-50"
-        />
-      )}
-
-      {isPopupBlocked && (
-        <ErrorMessage
-          message="Please enable popups to continue with Google sign in"
           className="animate-in fade-in-50"
         />
       )}

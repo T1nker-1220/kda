@@ -2,10 +2,11 @@
  * OAuth Callback Handler
  * This route handles the OAuth callback from Supabase authentication
  * Features:
- * - Code exchange for session
+ * - Code exchange for session with PKCE
  * - Error handling
  * - Proper redirects
  * - Role-based access setup
+ * - Success message handling
  */
 
 import { createServerClient } from '@/lib/supabase'
@@ -56,8 +57,12 @@ export async function GET(request: Request) {
       }
     }
 
+    // Add success message to the redirect URL
+    const redirectUrl = new URL(next, requestUrl.origin)
+    redirectUrl.searchParams.set('auth_success', 'true')
+
     // Redirect to the intended destination
-    return NextResponse.redirect(new URL(next, requestUrl.origin))
+    return NextResponse.redirect(redirectUrl)
   } catch (error) {
     console.error('Unexpected error in callback:', error)
     return NextResponse.redirect(

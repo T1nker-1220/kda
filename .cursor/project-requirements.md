@@ -207,7 +207,7 @@ Kusina de Amadeo is a full-stack food ordering system for an authentic Filipino 
      - ESLint
 
 2. **Authentication System**
-   - Integrate Google OAuth
+   - Integrate Google OAuth (Supabase auth)
    - Set up role-based access (admin/customer)
    - Implement protected routes
    - Configure RLS policies

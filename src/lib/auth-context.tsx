@@ -1,6 +1,11 @@
 /**
  * Authentication Context Provider
  * Manages authentication state and provides auth-related utilities throughout the application
+ * Features:
+ * - Google OAuth with PKCE flow
+ * - Role-based access control
+ * - Session management
+ * - Error handling
  */
 
 'use client'
@@ -29,7 +34,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error getting session:', error.message)
+      }
       setUser(session?.user ?? null)
       setRole(session?.user?.user_metadata.role as UserRole ?? null)
       setIsLoading(false)
@@ -59,11 +67,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             access_type: 'offline',
             prompt: 'consent',
           },
+          scopes: 'email profile',
         },
       })
-      if (error) throw error
+
+      if (error) {
+        console.error('Error signing in with Google:', error.message)
+        throw error
+      }
     } catch (error) {
-      console.error('Error signing in with Google:', error)
+      console.error('Error in signInWithGoogle:', error)
       throw error
     }
   }
@@ -71,9 +84,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut()
-      if (error) throw error
+      if (error) {
+        console.error('Error signing out:', error.message)
+        throw error
+      }
     } catch (error) {
-      console.error('Error signing out:', error)
+      console.error('Error in signOut:', error)
       throw error
     }
   }

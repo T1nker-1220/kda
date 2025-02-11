@@ -11,4 +11,21 @@
 
 [0.0.4] Important - Component Accessibility: Issue: Basic component implementation lacking proper accessibility features and user feedback → Solution: Enhanced components with ARIA labels, focus states, helper text, required field indicators, and smooth transitions → Why: Proper accessibility and visual feedback are crucial for usability and compliance with WCAG standards.
 
+### Authentication
+[0.0.5] Critical - Supabase PKCE Flow: Issue: Invalid request errors in Supabase authentication due to missing auth code and code verifier → Solution: Simplified auth implementation by removing custom popup handling, adding proper scopes to OAuth configuration, and implementing proper success message flow → Why: Proper OAuth configuration and simplified auth flow prevent authentication failures and improve user experience.
+
+[0.0.6] Important - Auth State Management: Issue: Inconsistent auth state handling across components → Solution: Centralized auth state management in AuthContext with proper loading states, error handling, and role-based access → Why: Centralized state management prevents auth-related bugs and ensures consistent user experience.
+
+### CSS Configuration
+[0.0.7] Critical - PostCSS Configuration: Issue: CSS processing errors due to incorrect PostCSS plugin configuration → Solution: Updated PostCSS config to use object format for plugins and added proper type definitions → Why: Correct PostCSS configuration is essential for proper CSS processing and prevents build errors.
+
+[0.0.8] Important - Tailwind Configuration: Issue: Missing brand colors and inconsistent styling due to incorrect Tailwind setup → Solution: Properly configured Tailwind with brand colors, dark mode support, and custom utilities → Why: Proper Tailwind configuration ensures consistent styling and maintainable CSS.
+
+[0.0.9] Important - CSS Organization: Issue: Duplicate styles and inconsistent CSS structure → Solution: Organized CSS into proper layers (base, components, utilities) with clear separation of concerns → Why: Well-organized CSS improves maintainability and prevents style conflicts.
+
+### Error Handling
+[0.0.10] Important - Toast Notifications: Issue: Lack of user feedback for important actions → Solution: Implemented toast system with proper variants (success, error, default) and accessibility support → Why: Clear user feedback improves UX and helps users understand system state.
+
+[0.0.11] Important - Error Boundaries: Issue: Uncaught errors causing app crashes → Solution: Added proper error boundaries with user-friendly error messages and recovery options → Why: Proper error handling prevents app crashes and provides better user experience.
+
 *Note: This file is updated only upon user request and focuses on capturing important, reusable lessons learned during development. Each entry includes a timestamp, category, and comprehensive explanation to prevent similar issues in the future.*

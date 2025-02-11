@@ -84,8 +84,8 @@ Last Updated: [v0.0.21]
         - [X] Handle OAuth popup blocking
         - [X] Add welcome message
         - [X] Create error pages
-        - [ ] Add Toaster to root layout
-        - [ ] Test complete flow
+        - [X] Add Toaster to root layout
+        - [X] Test complete flow
 
     [-] [AUTH-001-C] Auth Flow Implementation
         - [X] Implemented sign-in logic
