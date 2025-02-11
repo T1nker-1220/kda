@@ -20,11 +20,11 @@ export default function AuthLayout({
         {/* Logo and Theme Toggle */}
         <div className="flex items-center justify-between">
           <Image
-            src="/logo.png"
+            src="/images/logo.png"
             alt="Kusina de Amadeo"
-            width={150}
-            height={50}
-            className="dark:invert"
+            width={50}
+            height={33}
+            className="dark:brightness-100" // Ensure logo is visible in dark mode
             priority
           />
           <ThemeToggle />
@@ -50,7 +50,7 @@ export default function AuthLayout({
       )}>
         <div className="absolute inset-0">
           <Image
-            src="/auth-hero.jpg"
+            src="/images/auth-hero.jpg"
             alt="Authentic Filipino Cuisine"
             fill
             className="object-cover"

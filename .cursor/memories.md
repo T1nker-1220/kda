@@ -48,4 +48,6 @@
 
 - [0.0.22] Development: Enhanced authentication system by adding Toaster component to root layout for notifications, updating middleware for proper role-based access control with Supabase, and improving auth callback route with better error handling, role assignment, and redirects. All changes follow project requirements for exclusive Google OAuth usage and maintain proper security measures. #feature #authentication #security
 
+- [0.0.23] Development: Documented public images directory structure and usage - confirmed all project images are located in /public/images/ with the following organization: /public/images/auth-hero.jpg for authentication-related assets (Google OAuth button, login illustrations), /public/images/logo.png for logo and brand assets, /public/images/ui/ for interface elements (loading spinners, icons), and /public/images/placeholders.jpg for default/fallback images. All image paths are now properly referenced in components with Next.js Image optimization. #documentation #assets #organization
+
 *Note: This memory file maintains chronological order and uses tags for better organization. Cross-reference with @memories2.md will be created when reaching 1000 lines.*
