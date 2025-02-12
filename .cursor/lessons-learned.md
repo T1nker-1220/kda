@@ -2,6 +2,15 @@
 
 # Lessons Learned
 
+### Storage Implementation
+[0.0.16] Critical - File Name Validation: Issue: Inconsistent file name validation causing test failures → Solution: Implemented case-sensitive validation in validatePath function ensuring file names match their lowercase version → Why: Proper file name validation prevents inconsistencies in storage paths and ensures reliable file access.
+
+[0.0.17] Important - Storage URL Generation: Issue: URL generation tests failing due to hardcoded regex patterns → Solution: Updated tests to use exact URL matching with environment variables → Why: Environment-aware testing ensures consistency across different environments and prevents false negatives.
+
+[0.0.18] Important - Storage Error Handling: Issue: Unclear error messages and inconsistent error handling → Solution: Created comprehensive error handling system with custom StorageError class, retry mechanism, and user-friendly messages → Why: Proper error handling improves debugging and user experience.
+
+[0.0.19] Critical - Test Environment Setup: Issue: Missing environment variables in test environment causing failures → Solution: Added proper environment configuration in vitest.config.ts and .env.test → Why: Consistent test environment configuration ensures reliable test execution.
+
 ### Image Handling
 [0.0.1] Important - Image Storage Architecture: Issue: Unorganized image storage and URL management in Supabase leading to maintenance difficulties → Solution: Implemented structured storage configuration with dedicated buckets per content type, path generation utilities, and filename preservation system → Why: Proper organization and consistent naming conventions are crucial for long-term maintainability and prevent URL-related bugs.
 
