@@ -1,9 +1,48 @@
 # Add directories or file patterns to ignore during indexing (e.g. foo/ or *.csv)
-node_modules
-/dist
-/build
-.git
-.next
+node_modules/
+.pnpm-store/
 pnpm-lock.yaml
+
+# Build outputs
+.next/
+dist/
+build/
+out/
+
+# Environment and sensitive files
+*.pem
+*.key
+
+# Version control
+.git/
 .gitignore
 .cursorignore
+
+# Cache and logs
+.cache/
+*.log
+.vercel/
+.turbo/
+
+# Database backups and sensitive data
+supabase/.temp/
+*.backup
+*.dump
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test coverage and reports
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+
+# Temporary files
+.DS_Store
+*.tmp
+*.temp
+Thumbs.db

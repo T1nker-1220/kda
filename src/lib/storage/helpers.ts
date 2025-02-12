@@ -1,7 +1,8 @@
-import { STORAGE_DEFAULTS, StorageDirectory, UploadOptions } from '@/types/storage.types';
+import { StorageDirectory, UploadOptions } from '@/types/storage.types';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { CACHE_CONFIG, STORAGE_CONFIG } from './config';
 import { StorageError } from './errors';
-import { generateFileName, generateStorageUrl, isAllowedFileType, validatePath } from './url';
+import { generateFileName, generateStorageUrl, isAllowedFileType, validateFileSize, validatePath } from './url';
 
 /**
  * Uploads a file to storage with validation and error handling
@@ -13,17 +14,19 @@ export const uploadFile = async (
   file: File,
   options: UploadOptions
 ): Promise<string> => {
+  const config = STORAGE_CONFIG[options.directory];
+
   // Validate file type
-  if (!isAllowedFileType(file.type)) {
+  if (!isAllowedFileType(file.type, options.directory)) {
     throw new StorageError('INVALID_TYPE', 'Only PNG files are allowed', {
-      allowedTypes: STORAGE_DEFAULTS.allowedTypes
+      allowedTypes: config.allowedTypes
     });
   }
 
   // Validate file size
-  if (file.size > (options.maxSize ?? STORAGE_DEFAULTS.maxSize)) {
+  if (!validateFileSize(file.size, options.directory)) {
     throw new StorageError('FILE_TOO_LARGE', 'File exceeds size limit', {
-      maxSize: STORAGE_DEFAULTS.maxSize
+      maxSize: config.maxSize
     });
   }
 
@@ -39,9 +42,9 @@ export const uploadFile = async (
     const supabase = createClientComponentClient();
 
     const { data, error } = await supabase.storage
-      .from('images')
-      .upload(`${options.directory}/${fileName}`, file, {
-        cacheControl: '3600',
+      .from(config.bucket)
+      .upload(`${config.directory}/${fileName}`, file, {
+        cacheControl: config.cacheControl,
         contentType: 'image/png',
         upsert: false
       });
@@ -63,6 +66,8 @@ export const deleteFile = async (
   directory: StorageDirectory,
   fileName: string
 ): Promise<void> => {
+  const config = STORAGE_CONFIG[directory];
+
   // Validate path
   if (!validatePath(directory, fileName)) {
     throw new StorageError('INVALID_PATH', 'Invalid file path');
@@ -72,8 +77,8 @@ export const deleteFile = async (
     const supabase = createClientComponentClient();
 
     const { error } = await supabase.storage
-      .from('images')
-      .remove([`${directory}/${fileName}`]);
+      .from(config.bucket)
+      .remove([`${config.directory}/${fileName}`]);
 
     if (error) throw error;
   } catch (error) {
@@ -89,12 +94,18 @@ export const deleteFile = async (
 export const listFiles = async (
   directory: StorageDirectory
 ): Promise<string[]> => {
+  const config = STORAGE_CONFIG[directory];
+
   try {
     const supabase = createClientComponentClient();
 
     const { data, error } = await supabase.storage
-      .from('images')
-      .list(directory);
+      .from(config.bucket)
+      .list(config.directory, {
+        limit: 100,
+        offset: 0,
+        sortBy: { column: 'name', order: 'asc' }
+      });
 
     if (error) throw error;
 
@@ -114,8 +125,10 @@ export const listFiles = async (
 export const getDownloadUrl = async (
   directory: StorageDirectory,
   fileName: string,
-  expiresIn: number = 60
+  expiresIn: number = CACHE_CONFIG.api.maxAge
 ): Promise<string> => {
+  const config = STORAGE_CONFIG[directory];
+
   // Validate path
   if (!validatePath(directory, fileName)) {
     throw new StorageError('INVALID_PATH', 'Invalid file path');
@@ -125,8 +138,15 @@ export const getDownloadUrl = async (
     const supabase = createClientComponentClient();
 
     const { data, error } = await supabase.storage
-      .from('images')
-      .createSignedUrl(`${directory}/${fileName}`, expiresIn);
+      .from(config.bucket)
+      .createSignedUrl(`${config.directory}/${fileName}`, expiresIn, {
+        download: false,
+        transform: {
+          quality: 80, // Optimize image quality
+          width: 1200, // Max width for responsive images
+          height: 1200 // Max height for responsive images
+        }
+      });
 
     if (error) throw error;
     return data.signedUrl;

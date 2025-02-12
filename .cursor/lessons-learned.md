@@ -11,6 +11,12 @@
 
 [0.0.19] Critical - Test Environment Setup: Issue: Missing environment variables in test environment causing failures → Solution: Added proper environment configuration in vitest.config.ts and .env.test → Why: Consistent test environment configuration ensures reliable test execution.
 
+[0.0.20] Important - Storage Organization: Issue: Need for structured and maintainable image storage system → Solution: Implemented directory-based organization with type-specific prefixes (prod/cat/var), strict naming conventions, and comprehensive configuration → Why: Proper organization with clear naming conventions ensures scalability and prevents file management issues.
+
+[0.0.21] Important - Image Caching Strategy: Issue: Balancing cache duration with content freshness → Solution: Implemented multi-layer caching strategy with 1-year browser cache for immutable assets and 1-hour API cache with 5-minute stale-while-revalidate → Why: Proper caching strategy significantly improves performance while maintaining content freshness.
+
+[0.0.22] Important - Image Optimization: Issue: Need for optimized image delivery without format conversion → Solution: Implemented quality optimization (80%) and responsive sizing (1200x1200) while maintaining PNG format requirement → Why: Proper image optimization improves performance without compromising format requirements.
+
 ### Image Handling
 [0.0.1] Important - Image Storage Architecture: Issue: Unorganized image storage and URL management in Supabase leading to maintenance difficulties → Solution: Implemented structured storage configuration with dedicated buckets per content type, path generation utilities, and filename preservation system → Why: Proper organization and consistent naming conventions are crucial for long-term maintainability and prevent URL-related bugs.
 
