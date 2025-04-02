@@ -1,4 +1,4 @@
-*Follow the rules of the `brain-memories-lesson-learned-scratchpad.md` and `@.cursorrules` file. This memories file serves as a chronological log of all project activities, decisions, and interactions. Use "mems" trigger word for manual updates during discussions, planning, and inquiries. Development activities are automatically logged with timestamps, clear descriptions, and #tags for features, bugs, and improvements. Keep entries in single comprehensive lines under "### **Interactions**" etc. section. Create @memories2.md when reaching 1000 lines.*
+*This memories file maintains a chronological record of project activities and development decisions. Each entry requires a comprehensive single-line description with full context. It has a title, date, and a very long description of the interaction, changes, and decisions made. Create @memories2.md at 1000 lines with maintained cross-references. Never delete past entries.*
 
 # Project Memories (AI & User) 🧠
 

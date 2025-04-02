@@ -10,7 +10,7 @@ export const STORAGE_CONFIG: Record<StorageDirectory, StorageConfig> = {
     directory: 'products',
     maxSize: 2 * 1024 * 1024, // 2MB
     allowedTypes: ['image/png'],
-    cacheControl: 'public, max-age=31536000, immutable' // 1 year cache for static images
+    cacheControl: 'public, max-age=31536000, immutable', // 1 year cache for static images
   },
   categories: {
     bucket: 'images',

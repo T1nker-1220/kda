@@ -65,11 +65,11 @@ Last Updated: [v0.0.52]
         - [X] Set up access patterns
         - [X] Implement path validation
 
-    [-] [IMG-001-B] Storage Configuration
+    [X] [IMG-001-B] Storage Configuration
         - [X] Configure bucket settings
         - [X] Set up access policies
         - [X] Define size limits
-        - [-] Configure CORS settings
+        - [X] Configure CORS settings
 
 [ ] [IMG-002] Image Upload Utilities
     Priority: Critical
