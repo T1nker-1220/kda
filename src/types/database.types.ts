@@ -45,24 +45,33 @@ export type Database = {
         Row: {
           id: string
           userId: string
+          receiptId: string
           status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED'
-          total: number
+          paymentMethod: 'GCASH' | 'CASH'
+          paymentStatus: 'PENDING' | 'VERIFIED' | 'REJECTED'
+          totalAmount: number
           createdAt: string
           updatedAt: string
         }
         Insert: {
           id: string
           userId: string
+          receiptId: string
           status?: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED'
-          total: number
+          paymentMethod: 'GCASH' | 'CASH'
+          paymentStatus?: 'PENDING' | 'VERIFIED' | 'REJECTED'
+          totalAmount: number
           createdAt?: string
           updatedAt?: string
         }
         Update: {
           id?: string
           userId?: string
+          receiptId?: string
           status?: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED'
-          total?: number
+          paymentMethod?: 'GCASH' | 'CASH'
+          paymentStatus?: 'PENDING' | 'VERIFIED' | 'REJECTED'
+          totalAmount?: number
           createdAt?: string
           updatedAt?: string
         }
@@ -71,27 +80,42 @@ export type Database = {
         Row: {
           id: string
           orderId: string
-          status: 'PENDING' | 'VERIFIED' | 'REJECTED'
-          method: 'GCASH' | 'CASH'
           amount: number
+          method: 'GCASH' | 'CASH'
+          status: 'PENDING' | 'VERIFIED' | 'REJECTED'
+          referenceNumber?: string
+          screenshotUrl?: string
+          verifiedBy?: string
+          verificationTimestamp?: string
+          notes?: string
           createdAt: string
           updatedAt: string
         }
         Insert: {
           id: string
           orderId: string
-          status?: 'PENDING' | 'VERIFIED' | 'REJECTED'
-          method: 'GCASH' | 'CASH'
           amount: number
+          method: 'GCASH' | 'CASH'
+          status?: 'PENDING' | 'VERIFIED' | 'REJECTED'
+          referenceNumber?: string
+          screenshotUrl?: string
+          verifiedBy?: string
+          verificationTimestamp?: string
+          notes?: string
           createdAt?: string
           updatedAt?: string
         }
         Update: {
           id?: string
           orderId?: string
-          status?: 'PENDING' | 'VERIFIED' | 'REJECTED'
-          method?: 'GCASH' | 'CASH'
           amount?: number
+          method?: 'GCASH' | 'CASH'
+          status?: 'PENDING' | 'VERIFIED' | 'REJECTED'
+          referenceNumber?: string
+          screenshotUrl?: string
+          verifiedBy?: string
+          verificationTimestamp?: string
+          notes?: string
           createdAt?: string
           updatedAt?: string
         }
@@ -232,7 +256,7 @@ export type Database = {
           id: string
           orderId: string
           productId: string
-          variantId: string | null
+          productVariantId: string | null
           quantity: number
           price: number
           createdAt: string
@@ -242,7 +266,7 @@ export type Database = {
           id: string
           orderId: string
           productId: string
-          variantId?: string | null
+          productVariantId?: string | null
           quantity: number
           price: number
           createdAt?: string
@@ -252,7 +276,7 @@ export type Database = {
           id?: string
           orderId?: string
           productId?: string
-          variantId?: string | null
+          productVariantId?: string | null
           quantity?: number
           price?: number
           createdAt?: string
@@ -265,27 +289,24 @@ export type Database = {
           orderItemId: string
           addonId: string
           quantity: number
-          price: number
-          createdAt: string
-          updatedAt: string
+          unitPrice: number
+          subtotal: number
         }
         Insert: {
           id: string
           orderItemId: string
           addonId: string
           quantity: number
-          price: number
-          createdAt?: string
-          updatedAt?: string
+          unitPrice: number
+          subtotal: number
         }
         Update: {
           id?: string
           orderItemId?: string
           addonId?: string
           quantity?: number
-          price?: number
-          createdAt?: string
-          updatedAt?: string
+          unitPrice?: number
+          subtotal?: number
         }
       }
     }
@@ -297,10 +318,6 @@ export type Database = {
       VariantType: 'SIZE' | 'FLAVOR'
     }
     Functions: {
-      get_database_state: {
-        Args: Record<string, never>
-        Returns: Json
-      }
       exec_sql: {
         Args: {
           sql: string

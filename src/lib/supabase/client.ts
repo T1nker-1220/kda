@@ -23,25 +23,67 @@ const getSupabaseAnonKey = () => {
   return key
 }
 
-// SSR-safe cookie handling functions
+// Get Supabase project ref from URL
+const getProjectRef = () => {
+  const url = getSupabaseUrl()
+  const match = url.match(/https:\/\/([^.]+)\./)
+  return match ? match[1] : ''
+}
+
+// SSR-safe cookie handling functions with enhanced debugging
 const cookieHandlers = {
   get(name: string) {
     if (typeof window === 'undefined') return ''
-    const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`))
-    return match?.[2] || ''
+    
+    try {
+      const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`))
+      const value = match?.[2] || ''
+      
+      // Debug log for auth-related cookies
+      if (name.includes('auth-token')) {
+        console.log(`Client cookie get: ${name}, exists: ${!!value}`)
+      }
+      
+      return value
+    } catch (e) {
+      console.error(`Error getting cookie ${name}:`, e)
+      return ''
+    }
   },
+  
   set(name: string, value: string, options: { path?: string; maxAge?: number; domain?: string; secure?: boolean }) {
     if (typeof window === 'undefined') return
-    let cookie = `${name}=${value}`
-    if (options.path) cookie += `; path=${options.path}`
-    if (options.maxAge) cookie += `; max-age=${options.maxAge}`
-    if (options.domain) cookie += `; domain=${options.domain}`
-    if (options.secure) cookie += '; secure'
-    document.cookie = cookie
+    
+    try {
+      let cookie = `${name}=${value}`
+      if (options.path) cookie += `; path=${options.path}`
+      if (options.maxAge) cookie += `; max-age=${options.maxAge}`
+      if (options.domain) cookie += `; domain=${options.domain}`
+      if (options.secure) cookie += '; secure'
+      document.cookie = cookie
+      
+      // Debug log for auth-related cookies
+      if (name.includes('auth-token')) {
+        console.log(`Client cookie set: ${name}`)
+      }
+    } catch (e) {
+      console.error(`Error setting cookie ${name}:`, e)
+    }
   },
+  
   remove(name: string, options: { path?: string }) {
     if (typeof window === 'undefined') return
-    document.cookie = `${name}=; path=${options.path || '/'}; expires=Thu, 01 Jan 1970 00:00:00 GMT`
+    
+    try {
+      document.cookie = `${name}=; path=${options.path || '/'}; expires=Thu, 01 Jan 1970 00:00:00 GMT`
+      
+      // Debug log for auth-related cookies
+      if (name.includes('auth-token')) {
+        console.log(`Client cookie removed: ${name}`)
+      }
+    } catch (e) {
+      console.error(`Error removing cookie ${name}:`, e)
+    }
   }
 }
 
@@ -50,13 +92,30 @@ const cookieHandlers = {
  * This instance handles session persistence automatically
  */
 export const createBrowserSupabaseClient = () => {
-  return createBrowserClient<Database>(
-    getSupabaseUrl(),
-    getSupabaseAnonKey(),
-    {
-      cookies: cookieHandlers
-    }
-  )
+  console.log('Creating browser Supabase client')
+  try {
+    // Get and log project ref to ensure cookie naming is consistent
+    const projectRef = getProjectRef()
+    console.log('Using project ref for cookies:', projectRef)
+    
+    return createBrowserClient<Database>(
+      getSupabaseUrl(),
+      getSupabaseAnonKey(),
+      {
+        cookies: cookieHandlers,
+        cookieOptions: {
+          // Ensure cookies are accessible in the browser
+          // and server for better SSR handling
+          secure: true,
+          sameSite: 'lax',
+          path: '/'
+        }
+      }
+    )
+  } catch (error) {
+    console.error('Failed to create browser Supabase client:', error)
+    throw error
+  }
 }
 
 /**

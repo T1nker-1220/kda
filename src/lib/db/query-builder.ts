@@ -1,4 +1,4 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { supabase } from '@/lib/supabase/client'
 import { QueryClient } from '@tanstack/react-query'
 import type { DatabaseError, DbClient, QueryOptions } from './types'
 
@@ -7,11 +7,11 @@ import type { DatabaseError, DbClient, QueryOptions } from './types'
  * Provides a type-safe way to interact with the database with caching support
  */
 export class QueryBuilder {
-  private client: DbClient
+  public client: DbClient
   private queryClient: QueryClient
 
   constructor() {
-    this.client = createClientComponentClient()
+    this.client = supabase
     this.queryClient = new QueryClient({
       defaultOptions: {
         queries: {
@@ -28,6 +28,7 @@ export class QueryBuilder {
    * Handles database errors in a consistent way
    */
   private handleError(error: unknown): DatabaseError {
+    console.error('Database error:', error)
     if (error instanceof Error) {
       return {
         code: 'UNKNOWN_ERROR',
@@ -51,15 +52,21 @@ export class QueryBuilder {
     options?: QueryOptions
   ) {
     try {
+      console.log(`Executing query with key: ${key.join('/')}`)
       const cachedData = this.queryClient.getQueryData<T>(key)
       if (cachedData) {
+        console.log('Returning cached data')
         return { data: cachedData, error: null }
       }
 
       const { data, error } = await queryFn()
-      if (error) throw error
+      if (error) {
+        console.error(`Query error: ${error.message || 'Unknown error'}`)
+        throw error
+      }
 
       if (data) {
+        console.log('Setting query data in cache')
         this.queryClient.setQueryData(key, data)
       }
 
@@ -77,11 +84,17 @@ export class QueryBuilder {
     invalidateKeys?: string[][]
   ) {
     try {
+      console.log('Executing mutation')
       const { data, error } = await mutationFn()
-      if (error) throw error
+      if (error) {
+        console.error(`Mutation error: ${error.message || 'Unknown error'}`)
+        throw error
+      }
 
       if (data && invalidateKeys) {
+        console.log('Invalidating queries after mutation')
         invalidateKeys.forEach(key => {
+          console.log(`Invalidating: ${key.join('/')}`)
           this.queryClient.invalidateQueries({ queryKey: key })
         })
       }

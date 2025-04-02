@@ -1,19 +1,29 @@
 import { Database, Tables } from '@/types/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
+import { Database as SupabaseDatabase } from '@/types/supabase'
 
+/**
+ * Database client type
+ */
 export type DbClient = SupabaseClient<Database>
 
-export type QueryOptions = {
-  staleTime?: number
-  cacheTime?: number
-  refetchOnWindowFocus?: boolean
-  retry?: number | boolean
-}
-
-export type DatabaseError = {
+/**
+ * Database error type
+ */
+export interface DatabaseError {
   code: string
   message: string
   details: string
+}
+
+/**
+ * Query options type for caching behavior
+ */
+export interface QueryOptions {
+  staleTime?: number
+  cacheTime?: number
+  refetchOnWindowFocus?: boolean
+  retry?: boolean | number
 }
 
 export type QueryResult<T> = Promise<{

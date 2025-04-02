@@ -17,6 +17,8 @@
 
 [0.0.22] Important - Image Optimization: Issue: Need for optimized image delivery without format conversion → Solution: Implemented quality optimization (80%) and responsive sizing (1200x1200) while maintaining PNG format requirement → Why: Proper image optimization improves performance without compromising format requirements.
 
+[0.0.23] Critical - Supabase Storage Deletion: Issue: Images not being deleted when their associated category was removed → Solution: Implemented robust storage path extraction with URL decoding, leading slash removal, and file existence verification using both modern .exists() method and backward-compatible fallback → Why: Proper storage cleanup prevents orphaned files and ensures data consistency between database records and storage.
+
 ### Image Handling
 [0.0.1] Important - Image Storage Architecture: Issue: Unorganized image storage and URL management in Supabase leading to maintenance difficulties → Solution: Implemented structured storage configuration with dedicated buckets per content type, path generation utilities, and filename preservation system → Why: Proper organization and consistent naming conventions are crucial for long-term maintainability and prevent URL-related bugs.
 
