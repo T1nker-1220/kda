@@ -225,6 +225,11 @@ export type Database = {
           isAvailable: boolean
           createdAt: string
           updatedAt: string
+          variantGroup: string
+          displayOrder: number
+          isDefault: boolean
+          originalName: string | null
+          sizeValue: string | null
         }
         Insert: {
           id: string
@@ -237,6 +242,11 @@ export type Database = {
           isAvailable?: boolean
           createdAt?: string
           updatedAt?: string
+          variantGroup?: string
+          displayOrder?: number
+          isDefault?: boolean
+          originalName?: string | null
+          sizeValue?: string | null
         }
         Update: {
           id?: string
@@ -249,6 +259,11 @@ export type Database = {
           isAvailable?: boolean
           createdAt?: string
           updatedAt?: string
+          variantGroup?: string
+          displayOrder?: number
+          isDefault?: boolean
+          originalName?: string | null
+          sizeValue?: string | null
         }
       }
       OrderItem: {

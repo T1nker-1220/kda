@@ -429,60 +429,70 @@ export const useProductStore = create<ProductState>((set, get) => ({
   /**
    * Adds a new variant to a product
    */
-  addVariant: async (productId, variantData) => {
-    const state = get()
-    
+  addVariant: async (productId, variant) => {
     try {
       set({ isLoading: true, loading: true, error: null })
       
-      // Find the product in state
-      const product = state.products.find((p: ProductWithVariants) => p.id === productId)
-      
-      if (!product) {
-        throw new Error('Product not found')
-      }
-      
+      const variantId = uuidv4()
       const now = new Date().toISOString()
-      const newVariant: ProductVariant = {
-        id: uuidv4(),
+      
+      // Create the variant with all fields
+      const newVariant = {
+        id: variantId,
         productId,
-        name: variantData.name,
-        type: variantData.type,
-        price: variantData.price,
-        stock: variantData.stock,
-        imageUrl: variantData.imageUrl || null,
-        isAvailable: variantData.isAvailable ?? true,
+        name: variant.name,
+        type: variant.type,
+        price: variant.price,
+        stock: variant.stock,
+        imageUrl: variant.imageUrl || null,
+        isAvailable: variant.isAvailable ?? true,
+        variantGroup: variant.variantGroup || 'default',
+        displayOrder: variant.displayOrder || 0,
+        isDefault: variant.isDefault || false,
+        originalName: variant.originalName || null,
+        sizeValue: variant.sizeValue || null,
         createdAt: now,
         updatedAt: now
       }
       
-      const { data, error } = await supabase
+      const { data: createdVariant, error: variantError } = await supabase
         .from('ProductVariant')
         .insert(newVariant)
         .select()
       
-      if (error) {
-        throw error
+      if (variantError) {
+        throw variantError
       }
       
-      const createdVariant = data[0]
+      // Update the products state by adding the new variant
+      const state = get()
+      const updatedProducts = state.products.map(product => {
+        if (product.id === productId) {
+          return {
+            ...product,
+            variants: [...product.variants, newVariant]
+          }
+        }
+        return product
+      })
       
-      // Update state
-      const updatedProduct = {
-        ...product,
-        variants: [...product.variants, createdVariant]
+      // Update selectedProduct if it's the current product
+      let updatedSelectedProduct = state.selectedProduct
+      if (state.selectedProduct?.id === productId) {
+        updatedSelectedProduct = {
+          ...state.selectedProduct,
+          variants: [...state.selectedProduct.variants, newVariant]
+        }
       }
       
-      set((state) => ({
-        products: state.products.map((p: ProductWithVariants) => 
-          p.id === productId ? updatedProduct : p
-        ),
-        selectedProduct: state.selectedProduct?.id === productId ? updatedProduct : state.selectedProduct,
+      set({ 
+        products: updatedProducts, 
+        selectedProduct: updatedSelectedProduct,
         isLoading: false,
         loading: false
-      }))
+      })
       
-      return createdVariant
+      return createdVariant?.[0] || null
     } catch (error) {
       console.error('Error adding variant:', error)
       set({ 
@@ -495,60 +505,77 @@ export const useProductStore = create<ProductState>((set, get) => ({
   },
   
   /**
-   * Updates an existing product variant
+   * Updates an existing variant
    */
   updateVariant: async (variantId, variantData) => {
-    const state = get()
-    
     try {
       set({ isLoading: true, loading: true, error: null })
       
-      const updateData = {
+      const now = new Date().toISOString()
+      
+      // Update the variant
+      const updatedData = {
         ...variantData,
-        updatedAt: new Date().toISOString()
+        updatedAt: now
       }
       
-      const { data, error } = await supabase
+      const { data: updatedVariant, error: variantError } = await supabase
         .from('ProductVariant')
-        .update(updateData)
+        .update(updatedData)
         .eq('id', variantId)
         .select()
       
-      if (error) {
-        throw error
+      if (variantError) {
+        throw variantError
       }
       
-      const updatedVariant = data[0]
-      const productId = updatedVariant.productId
-      
-      // Find the product this variant belongs to
-      const product = state.selectedProduct?.id === productId 
-        ? state.selectedProduct 
-        : state.products.find((p: ProductWithVariants) => p.id === productId)
-      
-      if (!product) {
-        throw new Error('Product not found for this variant')
+      if (!updatedVariant || updatedVariant.length === 0) {
+        throw new Error('Variant not found')
       }
       
-      // Update the variant in the product
-      const updatedProduct = {
-        ...product,
-        variants: product.variants.map((v: ProductVariant) => 
-          v.id === variantId ? updatedVariant : v
-        )
+      // Update the products state by updating the variant
+      const state = get()
+      const updatedProducts = state.products.map(product => {
+        const variantIndex = product.variants.findIndex(v => v.id === variantId)
+        if (variantIndex !== -1) {
+          const updatedVariants = [...product.variants]
+          updatedVariants[variantIndex] = {
+            ...updatedVariants[variantIndex],
+            ...updatedData
+          }
+          return {
+            ...product,
+            variants: updatedVariants
+          }
+        }
+        return product
+      })
+      
+      // Update selectedProduct if it contains this variant
+      let updatedSelectedProduct = state.selectedProduct
+      if (state.selectedProduct) {
+        const variantIndex = state.selectedProduct.variants.findIndex(v => v.id === variantId)
+        if (variantIndex !== -1) {
+          const updatedVariants = [...state.selectedProduct.variants]
+          updatedVariants[variantIndex] = {
+            ...updatedVariants[variantIndex],
+            ...updatedData
+          }
+          updatedSelectedProduct = {
+            ...state.selectedProduct,
+            variants: updatedVariants
+          }
+        }
       }
       
-      // Update state
-      set((state) => ({
-        products: state.products.map((p: ProductWithVariants) => 
-          p.id === productId ? updatedProduct : p
-        ),
-        selectedProduct: state.selectedProduct?.id === productId ? updatedProduct : state.selectedProduct,
+      set({ 
+        products: updatedProducts, 
+        selectedProduct: updatedSelectedProduct,
         isLoading: false,
         loading: false
-      }))
+      })
       
-      return updatedVariant
+      return updatedVariant[0]
     } catch (error) {
       console.error('Error updating variant:', error)
       set({ 
