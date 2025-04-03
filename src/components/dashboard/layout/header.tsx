@@ -15,28 +15,23 @@ export function Header() {
   useEffect(() => {
     async function getUser() {
       try {
-        console.log('Header: Getting user session...')
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
         
         if (sessionError) {
-          console.error('Header: Session error:', sessionError)
           return
         }
         
         if (!session) {
-          console.log('Header: No session found')
           return
         }
         
         const { data: { user }, error: userError } = await supabase.auth.getUser()
         
         if (userError) {
-          console.error('Header: User error:', userError)
           return
         }
         
         if (user) {
-          console.log('Header: User found, getting details from User table')
           // Get user data from our own tables
           const { data, error: dbError } = await supabase
             .from('User')
@@ -45,17 +40,15 @@ export function Header() {
             .single()
             
           if (dbError) {
-            console.error('Header: Error fetching user data:', dbError)
             return
           }
             
           if (data) {
-            console.log('Header: User data found:', data.email, data.role)
             setUser(data)
           }
         }
       } catch (e) {
-        console.error('Header: Exception in getUser:', e)
+        console.error('Exception in getUser:', e)
       }
     }
     
@@ -64,16 +57,14 @@ export function Header() {
   
   const handleSignOut = async () => {
     try {
-      console.log('Header: Signing out...')
       const { error } = await supabase.auth.signOut()
       if (error) {
-        console.error('Header: Sign out error:', error)
+        console.error('Sign out error:', error)
       } else {
-        console.log('Header: Successfully signed out')
         router.replace('/')
       }
     } catch (e) {
-      console.error('Header: Exception during sign out:', e)
+      console.error('Exception during sign out:', e)
     }
   }
   

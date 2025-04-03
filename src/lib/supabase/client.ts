@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * Client-side Supabase Client Configuration
  * This file sets up the Supabase client for client-side operations.
@@ -23,68 +25,69 @@ const getSupabaseAnonKey = () => {
   return key
 }
 
-// Get Supabase project ref from URL
+// Get the Supabase project reference from the URL for cookie naming consistency
 const getProjectRef = () => {
   const url = getSupabaseUrl()
-  const match = url.match(/https:\/\/([^.]+)\./)
-  return match ? match[1] : ''
+  return url.match(/https:\/\/([^.]+)\./)?.[1] || ''
 }
 
-// SSR-safe cookie handling functions with enhanced debugging
+// Define consistent cookie handlers for browser-side operations
 const cookieHandlers = {
+  // Get cookie value from document.cookie
   get(name: string) {
-    if (typeof window === 'undefined') return ''
+    // Document not available during SSR
+    if (typeof document === 'undefined') return null
     
-    try {
-      const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`))
-      const value = match?.[2] || ''
-      
-      // Debug log for auth-related cookies
-      if (name.includes('auth-token')) {
-        console.log(`Client cookie get: ${name}, exists: ${!!value}`)
-      }
-      
-      return value
-    } catch (e) {
-      console.error(`Error getting cookie ${name}:`, e)
-      return ''
-    }
+    const cookies = Object.fromEntries(
+      document.cookie.split('; ').map(v => {
+        const [key, ...value] = v.split('=')
+        return [key, value.join('=')]
+      })
+    )
+    return cookies[name]
   },
-  
-  set(name: string, value: string, options: { path?: string; maxAge?: number; domain?: string; secure?: boolean }) {
-    if (typeof window === 'undefined') return
+
+  // Set cookie on document.cookie
+  set(name: string, value: string, options: any) {
+    // Document not available during SSR
+    if (typeof document === 'undefined') return
+
+    // Convert options object to cookie string
+    let cookieValue = `${name}=${value}`
     
-    try {
-      let cookie = `${name}=${value}`
-      if (options.path) cookie += `; path=${options.path}`
-      if (options.maxAge) cookie += `; max-age=${options.maxAge}`
-      if (options.domain) cookie += `; domain=${options.domain}`
-      if (options.secure) cookie += '; secure'
-      document.cookie = cookie
-      
-      // Debug log for auth-related cookies
-      if (name.includes('auth-token')) {
-        console.log(`Client cookie set: ${name}`)
-      }
-    } catch (e) {
-      console.error(`Error setting cookie ${name}:`, e)
+    if (options.expires) {
+      cookieValue += `; expires=${options.expires.toUTCString()}`
     }
+    if (options.path) {
+      cookieValue += `; path=${options.path}`
+    }
+    if (options.domain) {
+      cookieValue += `; domain=${options.domain}`
+    }
+    if (options.sameSite) {
+      cookieValue += `; samesite=${options.sameSite}`
+    }
+    if (options.secure) {
+      cookieValue += '; secure'
+    }
+    
+    document.cookie = cookieValue
   },
-  
-  remove(name: string, options: { path?: string }) {
-    if (typeof window === 'undefined') return
-    
-    try {
-      document.cookie = `${name}=; path=${options.path || '/'}; expires=Thu, 01 Jan 1970 00:00:00 GMT`
-      
-      // Debug log for auth-related cookies
-      if (name.includes('auth-token')) {
-        console.log(`Client cookie removed: ${name}`)
-      }
-    } catch (e) {
-      console.error(`Error removing cookie ${name}:`, e)
+
+  // Remove cookie by setting expiration to past date
+  remove(name: string, options: any) {
+    // Document not available during SSR
+    if (typeof document === 'undefined') return
+
+    // Set expiration to past date to delete cookie
+    const deleteCookie = {
+      ...options,
+      expires: new Date(0),
     }
-  }
+    
+    // Use set method with expired date
+    this.set(name, '', deleteCookie)
+  },
 }
 
 /**
@@ -92,11 +95,9 @@ const cookieHandlers = {
  * This instance handles session persistence automatically
  */
 export const createBrowserSupabaseClient = () => {
-  console.log('Creating browser Supabase client')
   try {
-    // Get and log project ref to ensure cookie naming is consistent
+    // Get project ref to ensure cookie naming is consistent
     const projectRef = getProjectRef()
-    console.log('Using project ref for cookies:', projectRef)
     
     return createBrowserClient<Database>(
       getSupabaseUrl(),
@@ -118,8 +119,5 @@ export const createBrowserSupabaseClient = () => {
   }
 }
 
-/**
- * Singleton instance for client-side usage
- * This should be used as the default client throughout the application
- */
+// Export singleton instance for use throughout the application
 export const supabase = createBrowserSupabaseClient()
